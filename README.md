@@ -1,6 +1,15 @@
 # SLDNet
 This repository contains the centralized SLDNet model and benchmark runners for the ALeRCE and DiMMAD workflows.
 
+## Data extraction references
+
+Use the data extraction and preparation steps described in these repositories before running the commands below:
+
+- ALeRCE data: [mperezcarrasco/AnomalyALeRCE](https://github.com/mperezcarrasco/AnomalyALeRCE)
+- DiMMAD data: [sidchaini/dimmad](https://github.com/sidchaini/dimmad/)
+
+After following those instructions, place the exported artifacts in the canonical layout expected by this repository.
+
 Canonical data layout at repository root:
 
 - `data/alerce/data/`
@@ -93,5 +102,4 @@ python dimmad_cli.py \
   --num_runs 20 \
   --epochs 1000 \
   --standarize \
-  --qft uniform
 ```
