@@ -49,9 +49,27 @@ from sklearn.neighbors import LocalOutlierFactor
 from sklearn.metrics import roc_auc_score, roc_curve
 from sklearn.preprocessing import StandardScaler
 
+from fastparquet import ParquetFile
+
+
+def _print_dataset_stats(features_df, new_knowns, new_unknowns, features_to_use):
+    filtered_df = features_df[features_df["class"].isin(new_knowns + new_unknowns)]
+
+    tot_frac_withoutnans = len(filtered_df.loc[:, features_to_use].dropna()) / len(filtered_df)
+    print(f"{tot_frac_withoutnans:.1%} of the dataset is clean and free of NaNs")
+
+    normal_frac_withoutnans = []
+    for col in filtered_df.columns:
+        if col == "class":
+            continue
+        normal_frac_withoutnans.append(len(filtered_df[col].dropna()) / len(filtered_df))
+
+    normal_frac_withoutnans = np.median(normal_frac_withoutnans)
+    print(f"The median no. of objects across columns which are not NaNs is {normal_frac_withoutnans:.1%}")
+
 ## ELAsTiCC OOD
 def elasticc_ood(result_path):
-    elasticc_features = pd.read_parquet("data/dimmad/elasticc_features.parquet")
+    elasticc_features = ParquetFile("data/dimmad/elasticc_features.parquet").to_pandas(index=False).set_index("snid")
     
     new_knowns = ['EB', 'DSCT', 'RRL', 'CEP']
     new_unknowns = ['PISN-STELLA_HYDROGENIC', 'PISN-MOSFIT', 'uLens-Single_PyLIMA',
@@ -77,18 +95,7 @@ def elasticc_ood(result_path):
     # Could use features we know are better for the 4 variable star classification
     # but don't want to bias. additionally, the above features are simple and general
     # and have very little NaNs.
-    tot_frac_withoutnans = len(elasticc_features[elasticc_features["class"].isin(new_knowns+new_unknowns)].loc[:,features_to_use].dropna())/len(elasticc_features)
-    print(f"{tot_frac_withoutnans:.1%} of the dataset is clean and free of NaNs")
-
-    normal_frac_withoutnans = []
-    for col in elasticc_features.columns:
-        if col=="class":
-            continue
-        normal_frac_withoutnans.append(len(elasticc_features[col].dropna())/len(elasticc_features))
-
-    normal_frac_withoutnans = np.median(normal_frac_withoutnans)
-
-    print(f"The median no. of objects across columns which are not NaNs is {normal_frac_withoutnans:.1%}")
+    _print_dataset_stats(elasticc_features, new_knowns, new_unknowns, features_to_use)
 
     all_classes = np.concatenate([new_knowns, new_unknowns])
     full_df = elasticc_features[elasticc_features['class'].isin(all_classes)]
@@ -107,7 +114,7 @@ def elasticc_ood(result_path):
 
 ## ELAsTiCC RID
 def elasticc_rid(result_path):
-    elasticc_features = pd.read_parquet("data/dimmad/elasticc_features.parquet")
+    elasticc_features = ParquetFile("data/dimmad/elasticc_features.parquet").to_pandas(index=False).set_index("snid")
     new_knowns = ['SNIcBL+HostXT_V19', 'SNIc-Templates', 'SNIa-SALT3', 'SNIb-Templates',
              'SNII+HostXT_V19', 'SNIa-91bg', 'SNIIb+HostXT_V19', 'SNIb+HostXT_V19', 
               'SNII-NMF', 'SNIIn+HostXT_V19', 'SNII-Templates','SNIc+HostXT_V19', 'SNIax', 
@@ -130,18 +137,7 @@ def elasticc_rid(result_path):
     # Could use features we know are better for the 4 variable star classification
     # but don't want to bias. additionally, the above features are simple and general
     # and have very little NaNs.
-    tot_frac_withoutnans = len(elasticc_features[elasticc_features["class"].isin(new_knowns+new_unknowns)].loc[:,features_to_use].dropna())/len(elasticc_features)
-    print(f"{tot_frac_withoutnans:.1%} of the dataset is clean and free of NaNs")
-    
-    normal_frac_withoutnans = []
-    for col in elasticc_features.columns:
-        if col=="class":
-            continue
-        normal_frac_withoutnans.append(len(elasticc_features[col].dropna())/len(elasticc_features))
-
-    normal_frac_withoutnans = np.median(normal_frac_withoutnans)
-
-    print(f"The median no. of objects across columns which are not NaNs is {normal_frac_withoutnans:.1%}")
+    _print_dataset_stats(elasticc_features, new_knowns, new_unknowns, features_to_use)
     
     all_classes = np.concatenate([new_knowns, new_unknowns])
     full_df = elasticc_features[elasticc_features['class'].isin(all_classes)]
@@ -152,7 +148,6 @@ def elasticc_rid(result_path):
     # will use this for stratification
 
     full_inlier_df = full_df[full_df["class"].isin(new_knowns)]
-    smallest_class_count = full_inlier_df["class"].value_counts().min()
     full_outlier_df = full_df[full_df["class"].isin(new_unknowns)]
     
     return full_inlier_df, full_outlier_df, new_knowns, features_to_use
@@ -160,7 +155,7 @@ def elasticc_rid(result_path):
 
 ## ZTF-ALeRCE OOD
 def ztf_ood(result_path):
-    alerce_ztf_features = pd.read_parquet("data/dimmad/alerceztf_features.parquet")
+    alerce_ztf_features = ParquetFile("data/dimmad/alerceztf_features.parquet").to_pandas(index=False).set_index("oid")
     new_knowns = ['RRL', 'LPV', 'E', 'QSO', 'YSO',  'AGN', 'CEP',
               'Periodic-Other', 'DSCT', 'Blazar', 'CV/Nova']
 
@@ -188,18 +183,7 @@ def ztf_ood(result_path):
     # Could use features we know are better for the 4 variable star classification
     # but don't want to bias. additionally, the above features are simple and general
     # and have very little NaNs.
-    tot_frac_withoutnans = len(alerce_ztf_features[alerce_ztf_features["class"].isin(new_knowns+new_unknowns)].loc[:,features_to_use].dropna())/len(alerce_ztf_features)
-    print(f"{tot_frac_withoutnans:.1%} of the dataset is clean and free of NaNs")
-
-    normal_frac_withoutnans = []
-    for col in alerce_ztf_features.columns:
-        if col=="class":
-            continue
-        normal_frac_withoutnans.append(len(alerce_ztf_features[col].dropna())/len(alerce_ztf_features))
-
-    normal_frac_withoutnans = np.median(normal_frac_withoutnans)
-
-    print(f"The median no. of objects across columns which are not NaNs is {normal_frac_withoutnans:.1%}")
+    _print_dataset_stats(alerce_ztf_features, new_knowns, new_unknowns, features_to_use)
 
     all_classes = np.concatenate([new_knowns, new_unknowns])
     full_df = alerce_ztf_features[alerce_ztf_features['class'].isin(all_classes)]
@@ -217,7 +201,7 @@ def ztf_ood(result_path):
 
 ## ZTF-ALeRCE RID
 def ztf_rid(result_path):
-    alerce_ztf_features = pd.read_parquet("data/dimmad/alerceztf_features.parquet")
+    alerce_ztf_features = ParquetFile("data/dimmad/alerceztf_features.parquet").to_pandas(index=False).set_index("oid")
     new_knowns = [ 'LPV', 'E', 'Periodic-Other', 'Blazar', 'CV/Nova']
 
     new_unknowns = ['RRL','CEP', 'DSCT', ]
@@ -244,17 +228,7 @@ def ztf_rid(result_path):
     # Could use features we know are better for the 4 variable star classification
     # but don't want to bias. additionally, the above features are simple and general
     # and have very little NaNs.
-    tot_frac_withoutnans = len(alerce_ztf_features[alerce_ztf_features["class"].isin(new_knowns+new_unknowns)].loc[:,features_to_use].dropna())/len(alerce_ztf_features)
-    print(f"{tot_frac_withoutnans:.1%} of the dataset is clean and free of NaNs")
-    normal_frac_withoutnans = []
-    for col in alerce_ztf_features.columns:
-        if col=="class":
-            continue
-        normal_frac_withoutnans.append(len(alerce_ztf_features[col].dropna())/len(alerce_ztf_features))
-
-    normal_frac_withoutnans = np.median(normal_frac_withoutnans)
-
-    print(f"The median no. of objects across columns which are not NaNs is {normal_frac_withoutnans:.1%}")
+    _print_dataset_stats(alerce_ztf_features, new_knowns, new_unknowns, features_to_use)
 
     all_classes = np.concatenate([new_knowns, new_unknowns])
     full_df = alerce_ztf_features[alerce_ztf_features['class'].isin(all_classes)]
@@ -306,7 +280,8 @@ def plot_diversity_purity(models_to_test, all_run_results, results_path, name, b
     fig = run_experiments.analysis_with_errors(
         models_to_test, all_run_results, budget=budget, metric="purity", show_legend=True
     )
-    plt.ylim(-0.05,1.0)
+    purity_max = max((np.nanmax(line.get_ydata()) for line in plt.gca().lines), default=0)
+    plt.ylim(0, max(0.1, np.ceil(purity_max * 10) / 10))
     # plt.gca().get_legend().remove()
     plt.savefig(f"{results_path}/{name}_a.pdf", bbox_inches="tight")
     plt.close()
@@ -350,13 +325,17 @@ if __name__ == "__main__":
     full_inlier_df, full_outlier_df, new_knowns, features_to_use = data_function(result_path)
     
     epochs = args.epochs
+    
+    # UNCOMMENT all the baselines you want to run.
+    # Can be time consuming, especially the autoencoder and MCSVDD.
     models_to_test = {
-        "SBGM (L:4)": SBGMAnomalyDetector(
+        "SLDNet (L:4)": SBGMAnomalyDetector(
             epochs=epochs,
             L=4,
             betas=(0.9, 0.999),
+            sigma_high=1.0
         ),
-        "SBGM (L:0.001)": SBGMAnomalyDetector(
+        "SLDNet (L:0.001)": SBGMAnomalyDetector(
             epochs=epochs,
             L=0.001,
             betas=(0.9, 0.999),
@@ -415,15 +394,15 @@ if __name__ == "__main__":
         num_runs=num_runs
     )
     newnames = {
-        # 'score_DistClassiPy (min-median)': 'score_DiMMAD (min-med)',
-        # 'score_DistClassiPy (median-median)': 'score_DiMMAD (med-med)',
-        # 'score_IsolationForest': 'score_iForest',
-        # 'score_LocalOutlierFactor': 'score_LOF',
-        # 'score_OneClassSVM': 'score_OC-SVM',
-        # 'score_Autoencoder': 'score_Autoencoder',
-        # 'score_ClassSVDD': 'score_MCSVDD',
-        'score_SBGM (L:0.001)': 'score_SBGM (L:0.001)',
-        'score_SBGM (L:4)': 'score_SBGM (L:4)',
+        'score_DistClassiPy (min-median)': 'score_DiMMAD (min-med)',
+        'score_DistClassiPy (median-median)': 'score_DiMMAD (med-med)',
+        'score_IsolationForest': 'score_iForest',
+        'score_LocalOutlierFactor': 'score_LOF',
+        'score_OneClassSVM': 'score_OC-SVM',
+        'score_Autoencoder': 'score_Autoencoder',
+        'score_ClassSVDD': 'score_MCSVDD',
+        'score_SLDNet (L:0.001)': 'score_SLDNet (L:0.001)',
+        'score_SLDNet (L:4)': 'score_SLDNet (L:4)',
     }
 
 
@@ -436,7 +415,7 @@ if __name__ == "__main__":
         all_run_results=all_runs_combined,
         results_path=args.result_path,
         name=f"{dataset}_{scheme}_ablation",
-        budget=2000
+        budget=300
     )
     
     # Save a .txt with printed configs
