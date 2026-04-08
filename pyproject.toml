@@ -1,0 +1,27 @@
+[project]
+name = "sldnet"
+version = "0.1.0"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "numpy>=1.26",
+    "pandas==3.0",
+    "matplotlib>=3.8",
+    "seaborn>=0.13",
+    "scikit-learn>=1.4",
+    "tqdm>=4.66",
+    "distclassipy",
+    "mlxtend>=0.23",
+    "squarify>=0.4.4",
+    "ipython>=8.18",
+    "fastparquet>=2024.2.0",
+    "torch==2.6.0",
+]
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu124" }
+distclassipy = { git = "https://github.com/sidchaini/DistClassiPy" }
+
+[[tool.uv.index]]
+name = "pytorch-cu124"
+url = "https://download.pytorch.org/whl/cu124"
+explicit = true
