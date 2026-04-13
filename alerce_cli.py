@@ -9,12 +9,13 @@ from alerce_benchmark.runner import run, run_all
 
 def build_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--run_name", type=str, default="runs/alerce_benchmark")
+    parser.add_argument("--run_name", type=str, default="results/alerce")
     parser.add_argument("--local_dir", type=str, default=".")
     parser.add_argument("--device", type=str, default="cuda:0")
     parser.add_argument("--epochs", type=int, default=5000)
     parser.add_argument("--lr", type=float, default=1e-4)
     parser.add_argument("--warmup_epochs", type=int, default=0)
+    parser.add_argument("--patience", type=int, default=100)
     parser.add_argument("--scheduler", type=str, default=None, choices=["step", "linear", "cosine", "tanh"])
     parser.add_argument("--batch_size", type=int, default=512)
     parser.add_argument("--num_workers", type=int, default=12)

@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from alerce_benchmark import sample_sigmas
+from alerce_benchmark.utils import sample_sigmas
 
 
 class MLPs(nn.Module):

@@ -63,7 +63,6 @@ def _fit_requires_y(model):
     return y_param is not None and y_param.default is inspect._empty
 
 
-
 def run_experiment(
     N_RUNS,
     models_to_test,
@@ -239,9 +238,9 @@ def analysis_with_errors(
         std_curve = np.std(fold_curves_arr, axis=0)
 
         # Plotting
-        lw = 3.25 if "SBGM".lower() in model_name.lower() else 1.75
+        lw = 3.25 if "SLDNet".lower() in model_name.lower() else 1.75
         label_name = model_name.replace(r"DiMMAD", r"$DiMMAD$")
-        model_name = model_name.replace("SBGM", "SLDNet")
+        # model_name = model_name.replace("SBGM", "SLDNet")
         try:
             mycolor = mycolors[model_name]
             myls = mylinestyles[model_name]
@@ -258,8 +257,8 @@ def analysis_with_errors(
         )
         plt.fill_between(
             top_ns,
-            np.clip(mean_curve - 0.5 * std_curve),
-            np.clip(mean_curve + 0.5 * std_curve),
+            np.clip(mean_curve - 0.5 * std_curve, 0, 1 if metric == "purity" else None),
+            np.clip(mean_curve + 0.5 * std_curve, 0, 1 if metric == "purity" else None),
             color=p[0].get_color(),
             alpha=0.1,
         )
@@ -291,7 +290,7 @@ def analysis_with_errors(
         legend = plt.legend(
             loc=loc,
             ncol=3 if metric == "purity" else 1,
-            fontsize=13,
+            fontsize=10,
             framealpha=1.0,
             handlelength=1.0,
             handleheight=0.8,

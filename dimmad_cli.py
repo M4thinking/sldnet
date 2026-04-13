@@ -195,7 +195,7 @@ if __name__ == "__main__":
     from argparse import ArgumentParser
     
     p = ArgumentParser()
-    p.add_argument('--result_path', type=str, default="runs/dimmad_benchmark")
+    p.add_argument('--result_path', type=str, default="results/dimmad")
     p.add_argument('--num_runs', type=int, default=20)
     p.add_argument('--epochs', type=int, default=1000)
     p.add_argument('--dataset', type=str, default="elasticc", choices=["elasticc","ztf"])
@@ -205,7 +205,7 @@ if __name__ == "__main__":
     if not os.path.exists(args.result_path):
         os.makedirs(args.result_path)
     
-    result_path = os.path.join(args.result_path, f"{args.dataset}_{args.scheme}_ablation.pkl")
+    result_path = os.path.join(args.result_path, f"{args.dataset}_{args.scheme}_results.pkl")
     num_runs = args.num_runs
     dataset = args.dataset
     scheme = args.scheme
@@ -302,12 +302,12 @@ if __name__ == "__main__":
         models_to_test=models_to_test,
         all_run_results=all_runs_combined,
         results_path=args.result_path,
-        name=f"{dataset}_{scheme}_ablation",
+        name=f"{dataset}_{scheme}",
         budget=300
     )
     
     # Save a .txt with printed configs
-    with open(os.path.join(args.result_path, f"{dataset}_{scheme}_ablation_config.txt"), "w") as f:
+    with open(os.path.join(args.result_path, f"{dataset}_{scheme}_config.txt"), "w") as f:
         f.write(f"Dataset: {dataset}\n")
         f.write(f"Scheme: {scheme}\n")
         f.write(f"Num runs: {num_runs}\n")

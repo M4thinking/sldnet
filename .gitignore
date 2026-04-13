@@ -155,3 +155,5 @@ configs/local/default.yaml
 # Custom folders
 runs/
 data/
+runs*
+results*

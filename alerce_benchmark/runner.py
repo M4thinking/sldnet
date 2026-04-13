@@ -13,19 +13,19 @@ from sklearn.metrics import average_precision_score, roc_auc_score
 from torch.utils.data import DataLoader, TensorDataset
 from tqdm import tqdm
 
-from alerce_benchmark import (
+from alerce_benchmark.preprocessing import (
     LossAccumulate,
     get_data,
     get_scheme_outliers,
     get_writer,
-    save_source_code,
+    save_source_code
 )
 from alerce_benchmark.model import (
     MLPs,
     ScoreOrLogDensityNetwork,
     compute_sldnet_loss,
-    sigma_values_from_L,
 )
+from alerce_benchmark.utils import sigma_values_from_L
 from alerce_benchmark.reporting import write_json
 
 torch.cuda.empty_cache()
@@ -339,14 +339,14 @@ def initialize_model(args, input_dim):
         scheduler = None
 
     log_path, writer = get_writer(
-        root_dir_runs=os.path.join(args.local_dir, "runs"),
+        root_dir_runs=args.local_dir,
         run_name=args.run_name,
         scheme=args.scheme,
         outlier=args.outlier.replace("/", "-"),
         fold=args.fold,
         args=args,
     )
-    save_source_code(log_path)
+    # save_source_code(log_path)
     return model, optimizer, scheduler, writer, log_path
 
 
@@ -569,7 +569,7 @@ def run_single(args):
     evaluator.save_args(args)
 
     best_model_state = copy.deepcopy(model.state_dict())
-    patience = 100
+    patience = args.patience
     patience_counter = 0
 
     for epoch in tqdm(range(args.epochs + 1), desc="Training", unit="epochs", leave=False):
@@ -607,7 +607,7 @@ def run_single(args):
                 plot_auc_roc_comparison(auc_roc_aggregate, writer, epoch)
                 plot_individual_sigma(results_individual, writer, epoch)
 
-        if patience_counter > patience:
+        if patience >= 0 and patience_counter > patience:
             break
 
     results = {

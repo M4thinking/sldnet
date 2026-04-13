@@ -1,5 +1,21 @@
 # SLDNet
+
 This repository contains the centralized SLDNet model and benchmark runners for the ALeRCE and DiMMAD workflows.
+
+## Installation
+
+```bash
+python -m pip install -U pip uv
+
+# install into the currently active environment
+uv sync --active
+
+# Option A:
+uv run <command> # to run directly without activating
+
+# Option B:
+source .venv/bin/activate # to activate the environment
+```
 
 ## Data extraction references
 
@@ -18,88 +34,25 @@ Canonical data layout at repository root:
 
 The commands below are written for the intended final root layout `./data/...`.
 
-## Reproduce ALeRCE `conference3`
-
-These commands reproduce the family-specific sweeps corresponding to the ALeRCE benchmark.
-
-Transient:
-
-```bash # -m sldnet.
-python alerce_cli.py \
-  --device cuda \
-  --run_name alerce \
-  --scheme Transient \
-  --fold all \
-  --all_outliers \
-  --epochs 10000 \
-  --lr 1e-4 \
-  --batch_size 512 \
-  --units 1024 512 \
-  --sigma_low 0.001 \
-  --sigma_high 3.0 \
-  --beta 0.001 \
-  --dropout 0.1 \
-  --norm layernorm \
-  --activation gelu \
-  --L 0.001
-```
-
-Periodic:
+## Reproduce ALeRCE and DiMMAD benchmarks
 
 ```bash
-python alerce_cli.py \
-  --device cuda \
-  --run_name alerce \
-  --scheme Periodic \
-  --fold all \
-  --all_outliers \
-  --epochs 10000 \
-  --lr 1e-4 \
-  --batch_size 512 \
-  --units 1024 512 \
-  --sigma_low 0.001 \
-  --sigma_high 3.0 \
-  --beta 0.001 \
-  --dropout 0.1 \
-  --norm layernorm \
-  --activation gelu \
-  --L 0.001
+# DiMMAD benchmark
+python dimmad_cli.py --dataset ztf --scheme rid --num_runs 20 --epochs 1000
+python dimmad_cli.py --dataset ztf --scheme ood --num_runs 20 --epochs 1000
+python dimmad_cli.py --dataset elasticc --scheme rid --num_runs 20 --epochs 1000
+python dimmad_cli.py --dataset elasticc --scheme ood --num_runs 20 --epochs 1000
 ```
 
-Stochastic:
-
 ```bash
-python alerce_cli.py \
-  --device cuda \
-  --run_name alerce \
-  --scheme Stochastic \
-  --fold all \
-  --all_outliers \
-  --epochs 5000 \
-  --lr 2e-5 \
-  --batch_size 512 \
-  --units 1024 512 \
-  --sigma_low 0.001 \
-  --sigma_high 3.0 \
-  --beta 0.001 \
-  --dropout 0.1 \
-  --norm layernorm \
-  --activation gelu \
-  --L 0.001
+# ALeRCE benchmark
+python alerce_cli.py --epochs 10000 --fold all --scheme Transient  --all_outliers
+python alerce_cli.py --epochs 10000 --fold all --scheme Periodic   --all_outliers 
+python alerce_cli.py --epochs  5000 --fold all --scheme Stochastic --all_outliers --lr 2e-5
 ```
 
-## Reproduce DiMMAD SLDNet benchmark
-
-This reproduces the SLDNet benchmark outputs used alongside the DiMMAD comparison workflow.
+Or, to run all benchmarks sequentially:
 
 ```bash
-python dimmad_cli.py \
-  --device cuda \
-  --data_dir data/dimmad \
-  --result_path runs/dimmad_benchmark \
-  --dataset all \
-  --scheme all \
-  --num_runs 20 \
-  --epochs 1000 \
-  --standarize \
+bash experiments.sh
 ```
