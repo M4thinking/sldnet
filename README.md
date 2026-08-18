@@ -56,3 +56,47 @@ Or, to run all benchmarks sequentially:
 ```bash
 bash experiments.sh
 ```
+
+## References
+
+The following works describe methods and benchmarks used in this repository:
+
+```bibtex
+@article{Perez-Carrasco_2023,
+  author = {Manuel Perez-Carrasco and Guillermo Cabrera-Vives and Lorena Hernandez-García and F. Förster and Paula Sanchez-Saez and Alejandra M. Muñoz Arancibia and Javier Arredondo and Nicolás Astorga and Franz E. Bauer and Amelia Bayo and M. Catelan and Raya Dastidar and P. A. Estévez and Paulina Lira and Giuliano Pignata},
+  title = {Alert Classification for the {ALeRCE} Broker System: The Anomaly Detector},
+  journal = {The Astronomical Journal},
+  year = {2023},
+  volume = {166},
+  number = {4},
+  pages = {151},
+  doi = {10.3847/1538-3881/ace0c1},
+  publisher = {The American Astronomical Society}
+}
+
+@inproceedings{Chaini_2025,
+  author = {Chaini, Siddharth and Bianco, Federica B. and Mahabal, Ashish},
+  title = {In Search of the Unknown Unknowns: A Multi-Metric Distance Ensemble for Out of Distribution Anomaly Detection in Astronomical Surveys},
+  booktitle = {Machine Learning and the Physical Sciences Workshop at the 39th Conference on Neural Information Processing Systems (NeurIPS 2025)},
+  year = {2025},
+  eprint = {2510.23702},
+  archivePrefix = {arXiv},
+  primaryClass = {astro-ph.IM}
+}
+```
+
+## Cite us
+
+If you use SLDNet, please cite:
+
+```bibtex
+@inproceedings{Guzman-Olave_2026,
+  author = {Guzmán-Olave, Sebastián and Estévez, Pablo A.},
+  title = {Score-Based Log-Density Estimation for Anomaly Detection in Astronomical Surveys},
+  booktitle = {2026 International Joint Conference on Neural Networks (IJCNN)},
+  year = {2026},
+  month = {jun},
+  address = {Maastricht, The Netherlands},
+  publisher = {IEEE}
+}
+```
